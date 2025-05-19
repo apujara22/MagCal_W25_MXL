@@ -1,0 +1,3 @@
+"generateCutSections": creates a modified attitude sphere with some data removed. you can either preserve the right/front/top of the sphere or remove a chunk of data from the bottom left corner.
+
+all "data_..." files are data files for attitude sphere that have had sections removed according to the number. For example, "data_circles_chunk20" had all data points with x,y,z values below 20 removed. Or "data_circles_front30" had all data points with y values above 30 preserved.

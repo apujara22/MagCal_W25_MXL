@@ -1,0 +1,92 @@
+% Generate points for three orthogonal circles on a sphere
+
+function [coordsXYZ] = generateCircles(factor)
+
+    close all;
+    
+%   noisePositional = 0;   % INPUT - max noise deviation - POSITIONAL
+%   noiseMagnitude = 0;     % INPUT - max noise deviation - MAGNITUDE
+
+% DO NOT CHANGE ___________________________________
+    % Generate points for three orthogonal sets of circles on a sphere with positional noise
+    numPoints = 50; % Number of points per circle
+    totalOffset = deg2rad(90); % INPUT - angular offset of extra circles from originals
+    angleOffset = deg2rad(3); % Offset for additional circles
+    numCircles = 2 + 2*(totalOffset / angleOffset); % Number of circles per axis
+    radius = 50; % Sphere radius
+% DO NOT CHANGE____________________________________
+    
+    % Generate base angles
+    theta = linspace(0, 2*pi, numPoints);
+    phiOffsets = linspace(-totalOffset, totalOffset, numCircles); % Small variations in phi
+    
+    % Initialize storage for all points
+    x = [];
+    y = [];
+    z = [];
+    
+    % Generate multiple nearby circles in the XY plane
+    for phi = pi/2 + phiOffsets
+        x = [x, radius * cos(theta) * sin(phi)];
+        y = [y, radius * sin(theta) * sin(phi)];
+        z = [z, radius * cos(phi) * ones(size(theta))];
+    end
+    
+    % Generate multiple nearby circles in the XZ plane
+    for phi = phiOffsets
+        x = [x, radius * cos(theta) * cos(phi)];
+        y = [y, radius * sin(phi) * ones(size(theta))];
+        z = [z, radius * sin(theta) * cos(phi)];
+    end
+    
+    % Generate multiple nearby circles in the YZ plane
+    for phi = phiOffsets
+        x = [x, radius * sin(phi) * ones(size(theta))];
+        y = [y, radius * cos(theta) * cos(phi)];
+        z = [z, radius * sin(theta) * cos(phi)];
+    end
+
+    x = transpose(x);
+    y = transpose(y);
+    z = transpose(z);
+
+    norms = sqrt(x.^2 + y.^2 + z.^2)
+
+    mag_x = x(1:end);
+    mag_y = y(1:end);
+    mag_z = z(1:end);
+
+    n = 1;
+    sizeVec = size(mag_x);
+    sz = sizeVec(1);
+    while (n <= sz)
+        if mag_x(n) < factor
+            mag_x(n) = [];
+            mag_y(n) = [];
+            mag_z(n) = [];
+            n = n - 1;
+        end
+        n = n + 1;
+        sizeVec = size(mag_x);
+        sz = sizeVec(1);
+    end
+
+    coordsXYZ = table(mag_x, mag_y, mag_z);
+    %str = ['data_circles_', num2str(numPoints * numCircles * 3), '.csv'];
+    str = strcat('data_circles_right', factor, '.csv');
+
+    writetable(coordsXYZ, str);
+    
+    % Plot the points
+    figure;
+    scatter3(mag_x, mag_y, mag_z, 10, 'filled');
+    axis equal;
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
+    title('Three Orthogonal Circles on a Sphere');
+    
+    grid on;
+    daspect([1 1 1]);
+
+end

@@ -1,0 +1,1 @@
+"generatePlots": main script that creates all desired plots
